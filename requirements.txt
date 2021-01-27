@@ -1,0 +1,5 @@
+flask
+autobahn
+dbus-python
+zeroconf
+Flask-RESTful
