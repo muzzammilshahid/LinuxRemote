@@ -60,7 +60,7 @@ class GetSetLock(Resource):
 
         if args.get("set_lock") == 1:
             try:
-                run("loginctl lock-session")
+                display.lock()
                 is_locked = True
             except ChildProcessError:
                 is_locked = False
