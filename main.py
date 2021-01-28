@@ -10,8 +10,9 @@ from pesh_service import Discovery
 
 app = Flask(__name__)
 api = Api(app)
+port = 5009
 display = Display()
-discovery = Discovery(9000)
+discovery = Discovery(port)
 
 
 def run(command):
@@ -73,10 +74,24 @@ class GetSetLock(Resource):
         return {"is_locked": is_locked}, 200
 
 
+class OpenLink(Resource):
+    def post(self):
+        print("I am here")
+        parser = reqparse.RequestParser()
+        parser.add_argument('link', type=str, help='Toggle lock/unlock states')
+        args = parser.parse_args(strict=True)
+        link = args.get("link")
+        print(link)
+
+        run(f'xdg-open {link}')
+        return {"open": link}, 200
+
+
 api.add_resource(GetSetVolume, '/api/volume')
 api.add_resource(GetSetLock, '/api/lock')
+api.add_resource(OpenLink, '/api/open')
 
 
 if __name__ == '__main__':
     discovery.publish()
-    app.run(host='0.0.0.0', port=5009, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
