@@ -1,5 +1,8 @@
-flask
-autobahn
+flask~=1.1.2
+autobahn~=20.12.3
 dbus-python
-zeroconf
+zeroconf~=0.28.8
 Flask-RESTful
+numpy
+opencv-python
+pyautogui

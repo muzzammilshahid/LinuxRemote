@@ -3,11 +3,16 @@ import shlex
 import subprocess
 
 from flask import Flask, request
+from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
 from lock_screen import Display
 from brightness import BrightnessControl
 from pesh_service import Discovery
+
+import numpy as np
+import cv2
+import pyautogui
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,7 +26,15 @@ def run(command):
     subprocess.check_call(shlex.split(command))
 
 
-class GetSetVolume(Resource):
+def screenshot():
+    image = pyautogui.screenshot()
+    image = cv2.cvtColor(np.array(image),
+                         cv2.COLOR_RGB2BGR)
+    print("Screenshot     ")
+    cv2.imwrite("image.png", image)
+
+
+class GetSetMute(Resource):
     def get(self):
         raw = subprocess.check_output(shlex.split("pacmd list-sinks"))
         is_muted = raw.find(b"muted: yes") != -1
@@ -54,6 +67,55 @@ class SetBrightness(Resource):
     def get(self, percent):
         brigtness_ctrl._set(int(percent))
         return "brightness changed"
+
+
+class GetSetVolume(Resource):
+    def get(self):
+        raw = subprocess.check_output(shlex.split(
+            "pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
+        print(raw)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('volume', type=int, help='volume of the speakers')
+        args = parser.parse_args(strict=True)
+        print(args.get("volume"))
+        vol = args.get("volume")
+        run(f"amixer -D pulse set Master {vol}%")
+        return {"volume": args.get("volume")}, 200
+
+
+class GetSetMuteMic(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('set_mute', type=int, help='Toggle mute/unmute states', choices=(1, 0))
+        args = parser.parse_args(strict=True)
+
+        if args.get("set_mute") == 1:
+            try:
+                run("amixer -D pulse sset Capture nocap")
+                is_muted = True
+            except ChildProcessError:
+                is_muted = False
+        else:
+            try:
+                run("amixer -D pulse sset Capture cap")
+                is_muted = False
+            except ChildProcessError:
+                is_muted = True
+
+        return {"is_muted": is_muted}, 200
+
+
+class GetSetMicVolume(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('volume', type=int, help='volume of the speakers')
+        args = parser.parse_args(strict=True)
+        print(args.get("volume"))
+        vol = args.get("volume")
+        run(f"amixer -D pulse set Capture {vol}%")
+        return {"volume": args.get("volume")}, 200
 
 
 class GetSetLock(Resource):
@@ -95,7 +157,17 @@ class OpenLink(Resource):
         return {"open": link}, 200
 
 
-api.add_resource(GetSetVolume, '/api/volume')
+@app.route('/api/screenshot')
+def download_file():
+    screenshot()
+    image = send_from_directory('.', "image.png", as_attachment=False)
+    return image, 200
+
+
+api.add_resource(GetSetMute, '/api/volume')
+api.add_resource(GetSetVolume, '/api/vol')
+api.add_resource(GetSetMuteMic, '/api/mic/mute')
+api.add_resource(GetSetMicVolume, '/api/mic/vol')
 api.add_resource(GetSetLock, '/api/lock')
 api.add_resource(OpenLink, '/api/open')
 api.add_resource(SetBrightness, '/api/brightnes/<percent>')
