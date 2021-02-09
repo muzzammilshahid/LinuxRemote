@@ -6,6 +6,7 @@ from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 
 from lock_screen import Display
+from brightness import BrightnessControl
 from pesh_service import Discovery
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ api = Api(app)
 port = 5009
 display = Display()
 discovery = Discovery(port)
+brigtness_ctrl = BrightnessControl()
 
 
 def run(command):
@@ -26,6 +28,12 @@ class GetSetVolume(Resource):
         data = {"is_muted": is_muted}
 
         return data, 200
+
+
+class SetBrightness(Resource):
+    def get(self, percent):
+        brigtness_ctrl._set(int(percent))
+        return "brightness changed"
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -90,8 +98,8 @@ class OpenLink(Resource):
 api.add_resource(GetSetVolume, '/api/volume')
 api.add_resource(GetSetLock, '/api/lock')
 api.add_resource(OpenLink, '/api/open')
-
+api.add_resource(SetBrightness, '/api/brightnes/<percent>')
 
 if __name__ == '__main__':
-    discovery.publish()
+    # discovery.publish()
     app.run(host='0.0.0.0', port=port, debug=True)

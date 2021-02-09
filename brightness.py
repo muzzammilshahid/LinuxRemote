@@ -92,4 +92,5 @@ class BrightnessControl:
 
 
 bright = BrightnessControl()
-bright._set(60)
+bright._set(50)
+print(bright.max_brightness, bright.brightness_current)
