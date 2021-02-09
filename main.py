@@ -29,12 +29,6 @@ class GetSetVolume(Resource):
 
         return data, 200
 
-
-class SetBrightness(Resource):
-    def get(self, percent):
-        brigtness_ctrl._set(int(percent))
-        return "brightness changed"
-
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('set_mute', type=int, help='Toggle mute/unmute states', choices=(1, 0))
@@ -54,6 +48,12 @@ class SetBrightness(Resource):
                 is_muted = True
 
         return {"is_muted": is_muted}, 200
+
+
+class SetBrightness(Resource):
+    def get(self, percent):
+        brigtness_ctrl._set(int(percent))
+        return "brightness changed"
 
 
 class GetSetLock(Resource):
@@ -101,5 +101,5 @@ api.add_resource(OpenLink, '/api/open')
 api.add_resource(SetBrightness, '/api/brightnes/<percent>')
 
 if __name__ == '__main__':
-    # discovery.publish()
+    discovery.publish()
     app.run(host='0.0.0.0', port=port, debug=True)
