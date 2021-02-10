@@ -7,7 +7,6 @@ from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
 from lock_screen import Display
-from brightness import BrightnessControl
 from pesh_service import Discovery
 
 import numpy as np
@@ -19,7 +18,6 @@ api = Api(app)
 port = 5009
 display = Display()
 discovery = Discovery(port)
-brigtness_ctrl = BrightnessControl()
 
 
 def run(command):
@@ -63,16 +61,9 @@ class GetSetMute(Resource):
         return {"is_muted": is_muted}, 200
 
 
-class SetBrightness(Resource):
-    def get(self, percent):
-        brigtness_ctrl._set(int(percent))
-        return "brightness changed"
-
-
 class GetSetVolume(Resource):
     def get(self):
-        raw = subprocess.check_output(shlex.split(
-            "pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
+        raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
         print(raw)
 
     def post(self):
@@ -157,6 +148,12 @@ class OpenLink(Resource):
         return {"open": link}, 200
 
 
+class SetBrightness(Resource):
+    def get(self, percent):
+        brigtness_ctrl._set(int(percent))
+        return "brightness changed"
+
+
 @app.route('/api/screenshot')
 def download_file():
     screenshot()
@@ -170,7 +167,6 @@ api.add_resource(GetSetMuteMic, '/api/mic/mute')
 api.add_resource(GetSetMicVolume, '/api/mic/vol')
 api.add_resource(GetSetLock, '/api/lock')
 api.add_resource(OpenLink, '/api/open')
-api.add_resource(SetBrightness, '/api/brightnes/<percent>')
 
 if __name__ == '__main__':
     discovery.publish()
