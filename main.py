@@ -1,6 +1,8 @@
 import os
 import shlex
 import subprocess
+import pickledb
+import random
 
 from flask import Flask, request
 from flask import send_from_directory
@@ -18,6 +20,9 @@ api = Api(app)
 port = 5009
 display = Display()
 discovery = Discovery(port)
+
+db = pickledb.load('test.db', False)
+dict_ = db.dcreate('database')
 
 
 def run(command):
@@ -154,6 +159,40 @@ class SetBrightness(Resource):
         return "brightness changed"
 
 
+class Verify(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('device_id', type=str, help='Device Id')
+        args = parser.parse_args()
+        device_id = args['device_id']
+        print(db.dexists('database', device_id))
+        if db.dexists('database', device_id):
+            return True
+        return False
+
+
+class Pair(Resource):
+    dict = {"otp": 123}
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('device_id', type=str, help='Device ID')
+        parser.add_argument('otp', type=str, help='OTP')
+        args = parser.parse_args()
+        if str(self.dict.get("otp")) == args['otp']:
+            db.dadd('database', (args['device_id'], self.dict.get("otp")))
+            db.dump()
+            return True
+        return False
+
+    def get(self):
+        otp = random.randint(10000, 99999)
+        self.dict["otp"] = otp
+        print(self.dict.get("otp"))
+        print(self.dict.items())
+        return self.dict.get("otp"), 200
+
+
 @app.route('/api/screenshot')
 def download_file():
     screenshot()
@@ -167,6 +206,8 @@ api.add_resource(GetSetMuteMic, '/api/mic/mute')
 api.add_resource(GetSetMicVolume, '/api/mic/vol')
 api.add_resource(GetSetLock, '/api/lock')
 api.add_resource(OpenLink, '/api/open')
+api.add_resource(Pair, '/api/pair/')
+api.add_resource(Verify, '/api/verify/')
 
 if __name__ == '__main__':
     discovery.publish()

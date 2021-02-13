@@ -6,3 +6,4 @@ Flask-RESTful
 numpy
 opencv-python
 pyautogui
+pickledb

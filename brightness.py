@@ -90,7 +90,3 @@ class BrightnessControl:
 
         self.change_in_progress = False
 
-
-bright = BrightnessControl()
-bright._set(50)
-print(bright.max_brightness, bright.brightness_current)
