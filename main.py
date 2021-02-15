@@ -165,7 +165,6 @@ class Verify(Resource):
         parser.add_argument('device_id', type=str, help='Device Id')
         args = parser.parse_args()
         device_id = args['device_id']
-        print(db.dexists('database', device_id))
         if db.dexists('database', device_id):
             return True
         return False
@@ -189,7 +188,6 @@ class Pair(Resource):
         otp = random.randint(10000, 99999)
         self.dict["otp"] = otp
         print(self.dict.get("otp"))
-        print(self.dict.items())
         return self.dict.get("otp"), 200
 
 
