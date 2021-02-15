@@ -21,8 +21,9 @@ port = 5009
 display = Display()
 discovery = Discovery(port)
 
-db = pickledb.load('test.db', False)
-dict_ = db.dcreate('database')
+db = pickledb.load('test.db', True)
+# print(db.dgetall("database"))
+# dict_ = db.dcreate('database')
 
 
 def run(command):
@@ -165,6 +166,9 @@ class Verify(Resource):
         parser.add_argument('device_id', type=str, help='Device Id')
         args = parser.parse_args()
         device_id = args['device_id']
+        print(device_id)
+        print(db)
+        print(db.get("database"))
         if db.dexists('database', device_id):
             return True
         return False
