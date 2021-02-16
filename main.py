@@ -22,8 +22,8 @@ display = Display()
 discovery = Discovery(port)
 
 db = pickledb.load('test.db', True)
-# print(db.dgetall("database"))
-# dict_ = db.dcreate('database')
+if not db.exists('database'):
+    dict_ = db.dcreate('database')
 
 
 def run(command):
@@ -68,15 +68,16 @@ class GetSetMute(Resource):
 
 
 class GetSetVolume(Resource):
+
+    # not working yet
     def get(self):
-        raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
+        raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\\1,'"))
         print(raw)
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('volume', type=int, help='volume of the speakers')
         args = parser.parse_args(strict=True)
-        print(args.get("volume"))
         vol = args.get("volume")
         run(f"amixer -D pulse set Master {vol}%")
         return {"volume": args.get("volume")}, 200
@@ -109,7 +110,6 @@ class GetSetMicVolume(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('volume', type=int, help='volume of the speakers')
         args = parser.parse_args(strict=True)
-        print(args.get("volume"))
         vol = args.get("volume")
         run(f"amixer -D pulse set Capture {vol}%")
         return {"volume": args.get("volume")}, 200
@@ -143,7 +143,6 @@ class GetSetLock(Resource):
 
 class OpenLink(Resource):
     def post(self):
-        print("I am here")
         parser = reqparse.RequestParser()
         parser.add_argument('link', type=str, help='Toggle lock/unlock states')
         args = parser.parse_args(strict=True)
@@ -166,9 +165,6 @@ class Verify(Resource):
         parser.add_argument('device_id', type=str, help='Device Id')
         args = parser.parse_args()
         device_id = args['device_id']
-        print(device_id)
-        print(db)
-        print(db.get("database"))
         if db.dexists('database', device_id):
             return True
         return False
