@@ -1,6 +1,5 @@
 import os
 
-from autobahn import wamp
 import dbus
 
 DBUS_DATA = {
