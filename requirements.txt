@@ -3,5 +3,6 @@ dbus-python
 zeroconf~=0.28.8
 Flask-RESTful
 numpy
+opencv-python
 pyautogui
 pickledb
