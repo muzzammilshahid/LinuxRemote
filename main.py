@@ -71,8 +71,12 @@ class GetSetVolume(Resource):
 
     # not working yet
     def get(self):
-        raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' |     head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\\1,'"))
-        print(raw)
+        command = "amixer -D pulse sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }'"
+        print(command)
+        run(command)
+        # raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
+        # print(raw)
+        return run(command)
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -210,3 +214,5 @@ api.add_resource(Verify, '/api/verify/')
 if __name__ == '__main__':
     discovery.publish()
     app.run(host='0.0.0.0', port=port, debug=True)
+    discovery.unpublish()
+

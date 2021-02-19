@@ -20,7 +20,7 @@ class Discovery:
     def __init__(self, port) -> None:
         super().__init__()
         ip_version = IPVersion.V4Only
-        desc = {'path': '/~paulsm/'}
+        desc = {'path': '/~muzzammil-Y11C/'}
         self.info = ServiceInfo(
             "_http._tcp.local.",
             f"{socket.gethostname()}._http._tcp.local.",

@@ -89,4 +89,3 @@ class BrightnessControl:
             self.write_brightness_value(brightness_requested)
 
         self.change_in_progress = False
-
