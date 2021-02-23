@@ -1,5 +1,5 @@
 flask~=1.1.2
-dbus-python
+debus-python
 zeroconf~=0.28.8
 Flask-RESTful
 numpy

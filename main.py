@@ -1,10 +1,9 @@
-import os
 import shlex
 import subprocess
 import pickledb
 import random
 
-from flask import Flask, request
+from flask import Flask
 from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
@@ -132,6 +131,7 @@ class GetSetLock(Resource):
         if args.get("set_lock") == 1:
             try:
                 display.lock()
+                # run("loginctl lock-session")
                 is_locked = True
             except ChildProcessError:
                 is_locked = False
@@ -157,10 +157,10 @@ class OpenLink(Resource):
         return {"open": link}, 200
 
 
-class SetBrightness(Resource):
-    def get(self, percent):
-        brigtness_ctrl._set(int(percent))
-        return "brightness changed"
+# class SetBrightness(Resource):
+#     def get(self, percent):
+#         brigtness_ctrl._set(int(percent))
+#         return "brightness changed"
 
 
 class Verify(Resource):
@@ -215,4 +215,3 @@ if __name__ == '__main__':
     discovery.publish()
     app.run(host='0.0.0.0', port=port, debug=True)
     discovery.unpublish()
-
