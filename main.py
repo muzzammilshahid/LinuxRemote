@@ -131,7 +131,6 @@ class GetSetLock(Resource):
         if args.get("set_lock") == 1:
             try:
                 display.lock()
-                # run("loginctl lock-session")
                 is_locked = True
             except ChildProcessError:
                 is_locked = False
@@ -155,12 +154,6 @@ class OpenLink(Resource):
 
         run(f'xdg-open {link}')
         return {"open": link}, 200
-
-
-# class SetBrightness(Resource):
-#     def get(self, percent):
-#         brigtness_ctrl._set(int(percent))
-#         return "brightness changed"
 
 
 class Verify(Resource):
