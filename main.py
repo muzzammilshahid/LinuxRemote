@@ -14,6 +14,8 @@ import numpy as np
 import cv2
 import pyautogui
 
+import alsaaudio
+
 app = Flask(__name__)
 api = Api(app)
 port = 5009
@@ -68,14 +70,11 @@ class GetSetMute(Resource):
 
 class GetSetVolume(Resource):
 
-    # not working yet
     def get(self):
-        command = "amixer -D pulse sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }'"
-        print(command)
-        run(command)
-        # raw = subprocess.check_output(shlex.split("pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'"))
-        # print(raw)
-        return run(command)
+        m = alsaaudio.Mixer()
+        vol = m.getvolume()
+        vol = int(vol[0])
+        return vol
 
     def post(self):
         parser = reqparse.RequestParser()
