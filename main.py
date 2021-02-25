@@ -81,7 +81,8 @@ class GetSetVolume(Resource):
         parser.add_argument('volume', type=int, help='volume of the speakers')
         args = parser.parse_args(strict=True)
         vol = args.get("volume")
-        run(f"amixer -D pulse set Master {vol}%")
+        m = alsaaudio.Mixer()
+        m.setvolume(vol)
         return {"volume": args.get("volume")}, 200
 
 
