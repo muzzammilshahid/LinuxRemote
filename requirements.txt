@@ -7,3 +7,4 @@ opencv-python
 pyautogui
 pickledb
 pyalsaaudio
+psutil

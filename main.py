@@ -15,6 +15,7 @@ import cv2
 import pyautogui
 
 import alsaaudio
+import psutil
 
 app = Flask(__name__)
 api = Api(app)
@@ -37,6 +38,17 @@ def screenshot():
                          cv2.COLOR_RGB2BGR)
     print("Screenshot     ")
     cv2.imwrite("image.png", image)
+
+
+# function returning time in hh:mm:ss
+def convertTime(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return "%d:%02d:%02d" % (hours, minutes, seconds)
+
+
+# returns a tuple
+battery = psutil.sensors_battery()
 
 
 class GetSetMute(Resource):
@@ -195,6 +207,14 @@ def download_file():
     return image, 200
 
 
+class BatteryInfo(Resource):
+    def get(self):
+        percentage = battery.percent
+        plugin_info = battery.power_plugged
+        battery_left = convertTime(battery.secsleft)
+        return 200, {"percentage": percentage, "plugin_info": plugin_info, "battery_time_left": battery_left}
+
+
 api.add_resource(GetSetMute, '/api/volume')
 api.add_resource(GetSetVolume, '/api/vol')
 api.add_resource(GetSetMuteMic, '/api/mic/mute')
@@ -203,6 +223,7 @@ api.add_resource(GetSetLock, '/api/lock')
 api.add_resource(OpenLink, '/api/open')
 api.add_resource(Pair, '/api/pair/')
 api.add_resource(Verify, '/api/verify/')
+api.add_resource(BatteryInfo, '/api/battery/')
 
 if __name__ == '__main__':
     discovery.publish()
