@@ -212,7 +212,7 @@ class BatteryInfo(Resource):
         percentage = battery.percent
         plugin_info = battery.power_plugged
         battery_left = convertTime(battery.secsleft)
-        return 200, {"percentage": percentage, "plugin_info": plugin_info, "battery_time_left": battery_left}
+        return {"percentage": percentage, "plugin_info": plugin_info, "battery_time_left": battery_left}, 200
 
 
 api.add_resource(GetSetMute, '/api/volume')
