@@ -209,7 +209,7 @@ def download_file():
 
 class BatteryInfo(Resource):
     def get(self):
-        percentage = battery.percent
+        percentage = int(battery.percent)
         plugin_info = battery.power_plugged
         battery_left = convertTime(battery.secsleft)
         return {"percentage": percentage, "plugin_info": plugin_info, "battery_time_left": battery_left}, 200
