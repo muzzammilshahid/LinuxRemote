@@ -1,5 +1,4 @@
-from flask import Flask, request
-from flask import send_from_directory
+from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
 from brightness import BrightnessControl
