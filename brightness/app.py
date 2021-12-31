@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
-from brightness import BrightnessControl
+from brightness.brightness import BrightnessControl
 
 brightness_ctrl = BrightnessControl()
 

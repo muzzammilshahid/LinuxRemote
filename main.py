@@ -7,8 +7,8 @@ from flask import Flask
 from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
-from lock_screen import Display
-from pesh_service import Discovery
+from display.lock_screen import Display
+from service.pesh_service import Discovery
 
 import numpy as np
 import cv2

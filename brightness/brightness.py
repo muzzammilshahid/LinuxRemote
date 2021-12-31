@@ -4,7 +4,7 @@ import time
 
 
 DRIVER_ROOT = '/sys/class/backlight/intel_backlight/'
-BRIGHTNESS_CONFIG_FILE = os.path.join(DRIVER_ROOT, 'brightness')
+BRIGHTNESS_CONFIG_FILE = os.path.join(DRIVER_ROOT, '')
 BRIGHTNESS_MAX_REFERENCE_FILE = os.path.join(DRIVER_ROOT, 'max_brightness')
 BRIGHTNESS_STEP = 25
 BRIGHTNESS_MIN = 1
